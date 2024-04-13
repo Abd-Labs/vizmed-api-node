@@ -20,7 +20,6 @@ export default (code, req, errorMessage) => {
   return {
     'resultMessage': {
       'en': enMessage,
-      'tr': trMessage
     },
     'resultCode': code
   };

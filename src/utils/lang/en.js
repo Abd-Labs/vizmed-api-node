@@ -2,6 +2,12 @@ export default {
   "verificationCodeTitle": "Verification Code - (App Name)",
   "verificationCodeBody": "Here is your confirm code:",
   "welcomeCode": "Welcome to the (App Name),",
+    //  messages for Mongoose errors
+  "MONGOOSE_ERROR_CODE_1": "An error occurred while saving the user data.",
+  "MONGOOSE_ERROR_CODE_2": "An error occurred while retrieving user data.",
+  "MONGOOSE_ERROR_CODE_3": "An error occurred while updating user data.",
+  "MONGOOSE_ERROR_CODE_4": "An error occurred while deleting user data.",
+    // other Error messages
   "00005": "Please provide all information to send a code.",
   "00006": "Access denied. No token provided.",
   "00007": "Invalid user id.",
@@ -15,11 +21,13 @@ export default {
   "00022": "No id provided in params. Please enter an id.",
   "00023": "Provided id is not a valid object id.",
   "00024": "Too many request.",
-  "00025": "Please provide all the required fields!",
+  "00025": "Validation Error: Please provide all the required fields!",
   "00026": "Please provide a valid email!",
   "00027": "Please provide a password that is longer than 6 letters and shorter than 20 letters.",
   "00028": "Please provide a name that is longer than 3 letters and shorter than 30 letters.",
   "00029": "Please provide a valid email!",
+  "00030":"Invalid field",
+  "00031": "Database Error: User Lookup Operation failed", // Updated message for error code 00031
   "00032": "An account with this email address already exists.",
   "00035": "You registered successfully.",
   "00036": "An account with this email address was not found.",
