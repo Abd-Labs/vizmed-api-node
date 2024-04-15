@@ -3,7 +3,7 @@ This Repository contains the Node JS API server for VizMed Mobile.
 
 ## Manual Installation
 
-- git clone https://github.com/bahricanyesil/nodejs-starter-template.git
+- git clone https://github.com/Abd-Labs/vizmed-api-node.git
 - cd vizmed-api-node
 - npm install
 - Prepare the environment variables by generating .env file just as .env.sample file
@@ -180,19 +180,6 @@ Sends the required information to logger util to log and after that returns the 
 Request data is validated using [Joi](https://github.com/hapijs/joi).
 
 The validation schemas are defined in the src/models/index.js directory and are used in the controllers by providing body as the parameter to the specific validation function.
-
-```js
-# A sample function in user.validator.js
-  function validateEditUser(body) {
-    const schema = Joi.object({
-        name: Joi.string().min(3).max(24),
-        username: Joi.string().min(3).max(15),
-        language: Joi.string().valid('tr', 'en'),
-        gender: Joi.string().valid('male', 'female', 'other'),
-        birthDate: Joi.date()
-    });
-    return schema.validate(body);
-}
 
 //TODO: Update readme files
 # A sample call to a validate function
