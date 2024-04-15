@@ -15,7 +15,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
-      unique: true,
     },
     googleId: String, // Google ID for users signing up with Google
     password: {

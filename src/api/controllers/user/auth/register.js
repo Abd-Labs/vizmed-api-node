@@ -33,13 +33,11 @@ export default async (req, res) => {
     return res.status(500).json(errorHelper("00031", req, err.message));
   });
 
-  console.log(exists)
   if (exists) {
-    console.log("came in if block")
+    console.log("came in if block");
     return res.status(409).json(errorHelper("00032", req));
   }
-  console.log("came here")
-  
+
   const hashed = await hash(req.body.password, 10);
 
   // const emailCode = generateRandomCode(4);
@@ -66,6 +64,8 @@ export default async (req, res) => {
 
   try {
     session.startTransaction();
+
+    console.log("came here");
     const user = new User({
       email: req.body.email,
       password: hashed,
