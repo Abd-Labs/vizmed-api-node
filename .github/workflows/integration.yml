@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - '*'
-      - '!main'
   pull_request:
     branches:
       - main
-      - '*'
-    types:
-      - closed
 
 jobs:
   build:
@@ -25,7 +21,10 @@ jobs:
         with:
           node-version: 
             -"16"
-            -"18" # Latest two versions of Node.js
+            -"18"
+            -"20" # Latest three versions of Node.js
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Tests
+        run: npm test
