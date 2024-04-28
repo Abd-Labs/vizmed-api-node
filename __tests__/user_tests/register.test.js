@@ -1,10 +1,25 @@
 import request from "supertest";
 import app from "../../src/app.js"; // Importing Express app instance
 import User from "../../src/models/index.js"; // Importing User model
+import mongoose from "mongoose"; // Importing mongoose
+
+// Place beforeAll and afterAll hooks here:
+beforeAll(async () => {
+  // ... Your setup logic here (e.g., await mongoose.connect(...))
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
+});
 
 describe("Register Controller", () => {
+  // New test case to print "hello world"
+  it("should print 'hello world'", () => {
+    console.log("hello world");
+  });
+
   // Mocking the User.exists method
-  jest.mock("../../../../models/index.js", () => ({
+  jest.mock("../../src/models/index.js", () => ({
     User: {
       exists: jest.fn(),
       startSession: jest.fn(),
@@ -61,8 +76,8 @@ describe("Register Controller", () => {
     // Mocking the save method of the User model
     const savedUser = {
       ...newUser,
-      password: null, 
-      _id: expect.any(String),  
+      password: null,
+      _id: expect.any(String),
       __v: 0,
     };
 
