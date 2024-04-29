@@ -1,16 +1,21 @@
 import request from "supertest";
-import app from "../../src/app.js"; // Importing Express app instance
+import express from 'express';
+import loader from "../../src/loaders/index.js"
 import User from "../../src/models/index.js"; // Importing User model
 import mongoose from "mongoose"; // Importing mongoose
 
+const app = express();
+loader(app);
+
 // Place beforeAll and afterAll hooks here:
-beforeAll(async () => {
+beforeAll( async () => {
   // ... Your setup logic here (e.g., await mongoose.connect(...))
 });
 
-afterAll(async () => {
-  await mongoose.connection.close();
-});
+afterAll( async () => {
+  await mongoose.connection.close();``
+},10000);
+
 
 describe("Register Controller", () => {
   // New test case to print "hello world"
