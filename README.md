@@ -1,44 +1,21 @@
-# nodejs-starter-template
-You can use this template when you're starting a new project. It contains general concepts, you can customize it according to your needs.
-
-A boilerplate/starter project for quickly building RESTful APIs using Node.js, Express, and Mongoose.
-
-You will get a production-ready Node.js app installed and configured on your machine. The app comes with many built-in features, such as authentication using JWT, request validation, error handling, logging, API documentation, image uploading (to AWS bucket), email sending, etc.
-
-Social logins (Google&Apple), unit and integration tests, in-app purchases (Google&Apple), daily crons, notifications (firebase), pagination, etc could be added in the future. Get ready for more, star it and wait!
-
+This Repository contains the Node JS API server for VizMed Mobile.
 <br />
 
 ## Manual Installation
 
-- git clone https://github.com/bahricanyesil/nodejs-starter-template.git
-- cd nodejs-starter-template
+- git clone https://github.com/Abd-Labs/vizmed-api-node.git
+- cd vizmed-api-node
 - npm install
 - Prepare the environment variables by generating .env file just as .env.sample file
-- npm start
+- npm run dev
 
 <br />
-
-## Table of Contents
-
-<!-- TABLE-OF-CONTENTS:START -->
-- [Features](https://github.com/bahricanyesil/nodejs-starter-template#features)
-- [Environment Variables](https://github.com/bahricanyesil/nodejs-starter-template#environment-variables)
-- [Project Structure](https://github.com/bahricanyesil/nodejs-starter-template#project-structure)
-- [API Documentation](https://github.com/bahricanyesil/nodejs-starter-template#api-documentation)
-- [Error Handling](https://github.com/bahricanyesil/nodejs-starter-template#error-handling)
-- [Validation](https://github.com/bahricanyesil/nodejs-starter-template#validation)
-- [Authentication](https://github.com/bahricanyesil/nodejs-starter-template#authentication)
-- [Authorization](https://github.com/bahricanyesil/nodejs-starter-template#authorization)
-- [Logging](https://github.com/bahricanyesil/nodejs-starter-template#logging)
-- [Contributing](https://github.com/bahricanyesil/nodejs-starter-template#contributing)
-<!-- TABLE-OF-CONTENTS:END -->
-
 <br />
 
 ## [Features](#features)
 
 <!-- FEATURES:START -->
+- **Continuous Integration**: integrated with [GitHub Actions](https://github.com/features/actions) for continuous integration
 - **NoSQL database**: [MongoDB](https://www.mongodb.com/) object data modeling using [Mongoose](https://mongoosejs.com/)
 - **Authentication and authorization**: using [JWT](https://jwt.io/) (access and refresh token)
 - **Validation**: request data validation using [Joi](https://github.com/hapijs/joi)
@@ -46,7 +23,6 @@ Social logins (Google&Apple), unit and integration tests, in-app purchases (Goog
 - **Error handling**: error handling mechanism with specific result messages and codes
 - **Image Uploading**: using [AWS S3 bucket](https://aws.amazon.com/tr/s3/)
 - **Email Sending**: for now for verification code by using [nodemailer](https://nodemailer.com/about/) and [AWS SES](https://aws.amazon.com/tr/ses/)
-- **Multilanguage Support**: using a util and jsons
 - **Environment variables**: using [dotenv](https://github.com/motdotla/dotenv)
 - **Security**: set security HTTP headers using [helmet](https://helmetjs.github.io/)
 - **CORS**: Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
@@ -80,6 +56,14 @@ AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY_HERE
 ## [Project Structure](#project-structure)
 
 ```js
+
+├─ __tests__                            // New directory
+│  └─ user_tests                        // New directory
+│     └─ register.test.js               // New test file
+│
+├─ .github                              // New directory
+│  └─ workflows                         // New directory
+│     └─ Integration.yml                // New file
 ├─ src
 │  ├─ api
 │  │  ├─ controllers
@@ -150,7 +134,7 @@ AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY_HERE
 
 ## [API Documentation](#api-documentation)
 
-To view all APIs and learn all the details required for the requests and responses, run the server and go to http://localhost:3000/api/docs/ in your browser. [Swagger](https://swagger.io/) automatically creates this page by using the definitions and descriptions written as comments in the required files.
+To view all APIs and learn all the details required for the requests and responses, run the server and go to http://localhost:8080/api/docs/ in your browser. [Swagger](https://swagger.io/) automatically creates this page by using the definitions and descriptions written as comments in the required files.
 
 ### API Endpoints
 
@@ -185,7 +169,6 @@ Sends the required information to logger util to log and after that returns the 
 ```js
   'resultMessage': {
     'en': enMessage,
-    'tr': trMessage
    },
    'resultCode': code
 ```
@@ -197,19 +180,6 @@ Sends the required information to logger util to log and after that returns the 
 Request data is validated using [Joi](https://github.com/hapijs/joi).
 
 The validation schemas are defined in the src/models/index.js directory and are used in the controllers by providing body as the parameter to the specific validation function.
-
-```js
-# A sample function in user.validator.js
-  function validateEditUser(body) {
-    const schema = Joi.object({
-        name: Joi.string().min(3).max(24),
-        username: Joi.string().min(3).max(15),
-        language: Joi.string().valid('tr', 'en'),
-        gender: Joi.string().valid('male', 'female', 'other'),
-        birthDate: Joi.date()
-    });
-    return schema.validate(body);
-}
 
 //TODO: Update readme files
 # A sample call to a validate function
@@ -267,11 +237,6 @@ The permissions are role-based. There are 4 roles default: admin-reader-creator-
 
 If the user making the request does not have the required permissions to access this route, a Forbidden (403) error is thrown.
 
-**3 Types Of Authority Check**:
-- **checkAdmin**: controls whether the user has admin type
-- **checkCreator**: controls whether the user has admin or creator type
-- **checkReader**: controls whether the user is normal user or has some extra permissions
-
 <br />
 
 ## [Logging](#logging)
@@ -297,28 +262,6 @@ ip: (the ip which the request is sent from)
 
 <br />
 
-## [Contribution](#contribution)
-
-Contributions are very, very important for me and for those who want to benefit from this resource. I will be very appreciated if you allocate time to contribute.
-
-### How can you contribute?
-
-If you have a new feature that you want to implement or you encountered with a bug that you know the reason of it and like to fix, you can do all of these by following this process:
-
-- Create an issue to explain the details of what you want to do
-- Fork the repo
-- Clone the repo and set it up
-- Implement the necessary changes by following the written code layout
-- Send a pull request
 
 
-### Important notes
 
-- Please do not go beyond the written code layout.
-- If you need, create folders acc. to the current folder structure.
-- Add specific result codes for each async function with catch.
-- Add specific and clear result messages for each result code in both English and Turkish.
-- Use only error-helper for error handling by looking at the sample code.
-- Use only logger util for logging by looking at the sample code. 
-
-**THANK YOU!**

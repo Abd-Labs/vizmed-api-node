@@ -1,31 +1,56 @@
-name: CI
+name: CI Pipeline (Build & Test)
 
 on:
   push:
     branches:
-      - '*'
-      - '!main'
+      - "*" # Build on all pushes
   pull_request:
     branches:
-      - main
-      - '*'
-    types:
-      - closed
+      - main # Test on pull requests to main branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Consider using a matrix strategy for different OSes if needed
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2 # Checkout code from repository
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 
-            -"16"
-            -"18" # Latest two versions of Node.js
+          node-version: "20.x" # Install Node.js version as specified
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefer-ci --production=false # Install dependencies, prioritizing ci scripts
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: node_modules # Cache dependencies to speed up future builds
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }} # Cache key based on OS, package-lock.json hash
+
+  test: # Separate job for testing
+    runs-on: ubuntu-latest # Consider using a matrix strategy for different OSes if needed
+
+    env: # Set environment variables for the test job
+      DB_URI: ${{ secrets.DB_URI }}
+      PORT: ${{ secrets.PORT }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      REFRESH_TOKEN_SECRET_KEY: ${{ secrets.REFRESH_TOKEN_SECRET_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - uses: actions/checkout@v2 # Checkout code (reused from build job)
+
+      - name: Use cached dependencies (optional)
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }} # Reuse cache key from build job
+
+      - name: Install Jest
+        run: npm install jest
+      - name: Run tests
+        run: npm test
