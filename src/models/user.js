@@ -11,11 +11,10 @@ const userSchema = new Schema(
       match:
         /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
     },
-    username: {
+    name : {
       type: String,
       required: true,
       lowercase: true,
-      unique: true,
     },
     googleId: String, // Google ID for users signing up with Google
     password: {

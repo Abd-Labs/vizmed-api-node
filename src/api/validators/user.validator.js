@@ -4,7 +4,7 @@ export function validateRegister(body) {
   const schema = Joi.object({
     email: Joi.string().email().min(3).required(),
     password: Joi.string().min(6).max(20).required(),
-    fullName: Joi.string().min(3).max(50).required(), // Update to match your User schema
+    name: Joi.string().min(3).max(50).required(), // Update to match your User schema
     role: Joi.string().valid('Student', 'Doctor').required(), // Assuming 'role' is a required field
     // Assuming other fields such as 'countryCode', 'isActivated', 'isVerified', etc., are not required during registration
   });

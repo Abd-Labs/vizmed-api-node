@@ -1,10 +1,8 @@
-import express from 'express';
 import { port } from './config/index.js';
-import loader from './loaders/index.js';
+import createServer from './server.js';
 
-const app = express();
 
-loader(app);
+const app = createServer();
 
 app.listen(port, err => {
   if (err) {
