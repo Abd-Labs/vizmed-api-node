@@ -29,9 +29,12 @@ export default async (req, res) => {
       .json(errorHelper(code, req, error.details[0].message));
   }
 
-  const exists = await User.exists({ email: req.body.email }).catch((err) => {
+  let exists;
+  try {
+    exists = await User.exists({ email: req.body.email });
+  } catch (err) {
     return res.status(500).json(errorHelper("00031", req, err.message));
-  });
+  }
 
   if (exists) {
     console.log("came in if block");
