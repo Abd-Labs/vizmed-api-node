@@ -12,7 +12,8 @@ export default async (req, res) => {
 
   logger('00050', req.user._id, getText('en', '00050'), 'Info', req);
   return res.status(200).json({
-    resultMessage: { en: getText('en', '00050'), tr: getText('tr', '00050') },
+    // resultMessage: { en: getText('en', '00050'), tr: getText('tr', '00050') },
+    message: "Logged out Successfully",
     resultCode: '00050'
   });
 };

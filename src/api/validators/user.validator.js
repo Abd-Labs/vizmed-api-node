@@ -26,6 +26,9 @@ export function validateSendVerificationCode(body) {
   return schema.validate(body);
 }
 
+
+
+
 export function validateVerifyEmail(body) {
   const schema = Joi.object({
     token: Joi.string().min(10).required(),

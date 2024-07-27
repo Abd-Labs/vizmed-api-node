@@ -2,18 +2,13 @@ import { User } from "../../../../models/index.js";
 import { validateRegister } from "../../../validators/user.validator.js";
 import {
   errorHelper,
-  generateRandomCode,
-  sendCodeToEmail,
   logger,
   getText,
-  turkishToEnglish,
-  signConfirmCodeToken,
+  signAccessToken,
+  signRefreshToken,
 } from "../../../../utils/index.js";
-import ipHelper from "../../../../utils/helpers/ip-helper.js";
 import bcrypt from "bcryptjs";
 const { hash } = bcrypt;
-import geoip from "geoip-lite";
-const { lookup } = geoip;
 
 export default async (req, res) => {
   const { error } = validateRegister(req.body);
@@ -24,93 +19,63 @@ export default async (req, res) => {
     else if (error.details[0].message.includes("password")) code = "00027";
     else if (error.details[0].message.includes("name")) code = "00028";
 
-    return res
-      .status(400)
-      .json(errorHelper(code, req, error.details[0].message));
+    return res.status(400).json(errorHelper(code, req, error.details[0].message));
   }
 
-  let exists;
   try {
-    exists = await User.exists({ email: req.body.email });
+    const exists = await User.exists({ email: req.body.email });
+    if (exists) {
+      console.log("User already exists");
+      return res.status(409).json(errorHelper("00032", req));
+    }
   } catch (err) {
     return res.status(500).json(errorHelper("00031", req, err.message));
   }
 
-  if (exists) {
-    console.log("came in if block");
-    return res.status(409).json(errorHelper("00032", req));
-  }
-
-  const hashed = await hash(req.body.password, 10);
-
-  // const emailCode = generateRandomCode(4);
-  // await sendCodeToEmail(req.body.email, req.body.name, emailCode, req.body.language, 'register', req, res);
-
-  // let username = '';
-  // let tempName = '';
-  // let existsUsername = true;
-  // let name = turkishToEnglish(req.body.name);
-  // if (name.includes(' ')) {
-  //   tempName = name.trim().split(' ').slice(0, 1).join('').toLowerCase();
-  // } else {
-  //   tempName = name.toLowerCase().trim();
-  // }
-  // do {
-  //   username = tempName + generateRandomCode(4);
-  //   existsUsername = await User.exists({ username: username }).catch((err) => {
-  //     return res.status(500).json(errorHelper('00033', req, err.message));
-  //   });
-  // } while (existsUsername);
-  // const geo = lookup(ipHelper(req));
-
-  const session = await User.startSession();
-
   try {
+    const hashedPassword = await hash(req.body.password, 10);
+    const session = await User.startSession();
+
     session.startTransaction();
 
-    console.log("came here");
     const user = new User({
       email: req.body.email,
-      password: hashed,
+      password: hashedPassword,
       name: req.body.name,
       role: req.body.role,
-
-      // username: username,
-      // language: req.body.language,
-      // platform: req.body.platform,
-      // isVerified: false,
-      // countryCode: geo == null ? "US" : geo.country,
-      // timezone: req.body.timezone,
-      // lastLogin: Date.now(),
+      isActivated: true,
+      isVerified: false,
     });
 
-    const saveduser = await user.save({ session });
-    console.log("User saved successfully:", saveduser);
+    const savedUser = await user.save({ session });
+    // console.log("User saved successfully:", savedUser);
 
-    user.password = null;
+    const accessToken = signAccessToken(savedUser._id);
+    const refreshToken = signRefreshToken(savedUser._id);
 
-    // const confirmCodeToken = signConfirmCodeToken(user._id, emailCode);
+    logger("00035", savedUser._id, getText("en", "00035"), "Info", req);
 
-    logger("00035", saveduser._id, getText("en", "00035"), "Info", req);
-
-    // Commit the transaction if everything is successful
     await session.commitTransaction();
     session.endSession();
+
     return res.status(200).json({
       resultMessage: { en: getText("en", "00035") },
       resultCode: "00035",
-      saveduser,
-      // confirmToken: confirmCodeToken,
+      accessToken,
+      refreshToken,
+      user: {
+        ...savedUser._doc,
+        password: null,
+      },
     });
   } catch (error) {
-    // Rollback the transaction if any part of the process fails
     await session.abortTransaction();
     session.endSession();
-    // Handle other types of errors
-    console.error("Other Error:", error);
-    return res.status(500).json(errorHelper("00008", req, error.message)); // Using the generic internal server error message code
+    console.error("Error during registration:", error);
+    return res.status(500).json(errorHelper("00008", req, error.message));
   }
 };
+
 
 /**
  * @swagger

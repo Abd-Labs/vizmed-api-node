@@ -31,40 +31,15 @@ const userSchema = new Schema(
     patients: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Patient'
-    }]
-  
-
-    // isPremium: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-  
-    // countryCode: {
-    //   type: String,
-    // },
-    // timezone: {
-    //   type: Number,
-    // },
-   
-    // //NOTE: To check whether the account is active or not. When user deletes the account, you can store the information anonymously.
-    // isActivated: {
-    //   type: Boolean,
-    //   default: true,
-    // },
-    // //NOTE: To check whether the user skipped the email-verification step or not. You can delete the unverified accounts day by day.
-    // isVerified: {
-    //   type: Boolean,
-    //   required: true,
-    // },
-    // deviceId: {
-    //   type: String,
-    // },
-    // //NOTE: You can add more options acc. to your need.
-    // platform: {
-    //   type: String,
-    //   enum: ["Android", "IOS"],
-    //   required: true,
-    // },
+    }],
+    isActivated: {
+      type: Boolean,
+      default: true,
+    },
+    isVerified: {
+      type: Boolean,
+      required: true,
+    },
   
   },
   {
