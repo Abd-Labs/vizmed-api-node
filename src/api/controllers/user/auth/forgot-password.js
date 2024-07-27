@@ -17,7 +17,7 @@ export default async (req, res) => {
 
   logger('00068', req.user._id, getText('en', '00068'), 'Info', req);
   return res.status(200).json({
-    resultMessage: { en: getText('en', '00068'), tr: getText('tr', '00068') },
+    resultMessage: { en: getText('en', '00068')},
     resultCode: '00068'
   });
 };

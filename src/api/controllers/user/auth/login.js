@@ -16,47 +16,56 @@ export default async (req, res) => {
     return res.status(400).json(errorHelper(code, req, error.details[0].message));
   }
 
-  const user = await User.findOne({ email: req.body.email, isActivated: true, isVerified: true }).select('+password')
-    .catch((err) => {
-      return res.status(500).json(errorHelper('00041', req, err.message));
-    });
+  try {
+    const user = await User.findOne({ email: req.body.email, isActivated: true, isVerified: true });
 
-  if (!user)
-    return res.status(404).json(errorHelper('00042', req));
+    if (!user)
+      return res.status(404).json(errorHelper('00042', req)); // User not found error
 
-  if (!user.isActivated)
-    return res.status(400).json(errorHelper('00043', req));
+    if (!user.isActivated)
+      return res.status(400).json(errorHelper('00043', req));
 
-  if (!user.isVerified)
-    return res.status(400).json(errorHelper('00044', req));
+    if (!user.isVerified)
+      return res.status(400).json(errorHelper('00044', req));
 
-  const match = await compare(req.body.password, user.password);
-  if (!match)
-    return res.status(400).json(errorHelper('00045', req));
+    const match = await compare(req.body.password, user.password);
+    if (!match)
+      return res.status(400).json(errorHelper('00045', req)); // Password mismatch error
 
-  const accessToken = signAccessToken(user._id);
-  const refreshToken = signRefreshToken(user._id);
-  //NOTE: 604800000 ms is equal to 7 days. So, the expiry date of the token is 7 days after.
-  await Token.updateOne(
-    { userId: user._id },
-    {
-      $set: {
-        refreshToken: refreshToken,
-        status: true,
-        expiresIn: Date.now() + 604800000,
-        createdAt: Date.now()
+    const accessToken = signAccessToken(user._id);
+    const refreshToken = signRefreshToken(user._id);
+
+    // Calculate the expiry date for the refresh token (7 days)
+    const expiresIn = new Date(Date.now() + 604800000);
+
+    // Update or create the token in the database
+    await Token.updateOne(
+      { userId: user._id },
+      {
+        $set: {
+          refreshToken: refreshToken,
+          status: true,
+          expiresIn: expiresIn,
+          createdAt: Date.now()
+        },
       },
-    }
-  ).catch((err) => {
-    return res.status(500).json(errorHelper('00046', req, err.message));
-  });
+      { upsert: true } // Create a new token if it doesn't exist
+    );
 
-  logger('00047', user._id, getText('en', '00047'), 'Info', req);
-  return res.status(200).json({
-    resultMessage: { en: getText('en', '00047'), tr: getText('tr', '00047') },
-    resultCode: '00047', user, accessToken, refreshToken
-  });
+    logger('00047', user._id, getText('en', '00047'), 'Info', req);
+    return res.status(200).json({
+      // resultMessage: { en: getText('en', '00047'), tr: getText('tr', '00047') },
+      resultCode: '00047',
+      user,
+      accessToken,
+      refreshToken
+    });
+  } catch (err) {
+    return res.status(500).json(errorHelper('00041', req, err.message)); // Internal server error
+  }
 };
+
+
 
 /**
  * @swagger
