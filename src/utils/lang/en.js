@@ -7,6 +7,7 @@ export default {
   "MONGOOSE_ERROR_CODE_2": "An error occurred while retrieving user data.",
   "MONGOOSE_ERROR_CODE_3": "An error occurred while updating user data.",
   "MONGOOSE_ERROR_CODE_4": "An error occurred while deleting user data.",
+
     // other Error messages
   "00005": "Please provide all information to send a code.",
   "00006": "Access denied. No token provided.",
@@ -41,7 +42,7 @@ export default {
   "00047": "You logged in successfully.",
   "00048": "The code is sent to your email successfully.",
   "00050": "Successfully logged out.",
-  "00052": "The user could not find.",
+  "00052": "No such user found.",
   "00053": "Please send a verification code.",
   "00054": "The code you enter does not match with the code we sent to your email. Please check again.",
   "00055": "Invalid token. the token may have expired.",
@@ -60,7 +61,7 @@ export default {
   "00077": "Please provide a name that is longer than 3 letters and shorter than 30 letters.",
   "00078": "Valid gender options: female-male-other, plese provide one of them.",
   "00079": "Valid language options: tr-en, plese provide one of them.",
-  "00080": "Please provide a valid birth date.",
+  "00080": "Please provide a valid age or birth date.",
   "00081": "Please provide a username that is longer than 3 letters and shorter than 15 letters.",
   "00084": "There is already a user with this username, please enter another.",
   "00086": "Your profile information was changed successfully.",
