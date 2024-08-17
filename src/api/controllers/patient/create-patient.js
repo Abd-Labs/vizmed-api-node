@@ -1,8 +1,9 @@
 import { Patient } from "../../../models/index.js";
 import { validateCreatePatient } from "../../validators/patient.validator.js";
-import { errorHelper, logger } from "../../../utils/index.js";
+import { errorHelper, logger ,getText} from "../../../utils/index.js";
 
 const createPatient = async (req, res) => {
+  
   const { error } = validateCreatePatient(req.body);
   if (error) {
     console.log(error);
@@ -17,18 +18,18 @@ const createPatient = async (req, res) => {
 
     return res.status(400).json(errorHelper(code, req, error.details[0].message));
   }
-
+ 
    // Check if the user is a doctor
    if (req.user.role !== 'Doctor') {
     console.log("Access denied. Only doctors can create patients.");
-    return res.status(403).json(errorHelper("00017", req));
+    return res.status(403).json(errorHelper("00017", req))
   }
-  
-  try {
-    // Start a session and transaction
-    const session = await mongoose.startSession();
-    session.startTransaction();
+ 
+  // Start a session and transaction
+  const session = await Patient.startSession();
+  session.startTransaction();
 
+  try {
     const patient = new Patient({
       doctorId: req.user._id, // Doctor creating the patient
       patientId: req.body.patientId,
@@ -39,20 +40,23 @@ const createPatient = async (req, res) => {
       contactInfo: req.body.contactInfo,
     });
 
-    const savedPatient = await patient.save({ session });
-
-    // Commit the transaction
-    await session.commitTransaction();
-    session.endSession();
+    const savedPatient = await patient.save({session});
 
     // Log success
     logger("00089", savedPatient._id, getText("en", "00089"), "Info", req);
 
+
+     // Commit the transaction
+     await session.commitTransaction();
+     session.endSession();
+
+
     return res.status(201).json({
-      resultMessage: { en: getText("en", "00089") },
+      // resultMessage: { en: getText("en", "00089") },
       resultCode: "00089",
       patient: savedPatient
     });
+
   } catch (error) {
     // Abort transaction if error occurs
     await session.abortTransaction();

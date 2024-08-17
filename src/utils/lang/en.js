@@ -42,6 +42,7 @@ export default {
   "00047": "You logged in successfully.",
   "00048": "The code is sent to your email successfully.",
   "00050": "Successfully logged out.",
+  "00051": "No such resource found in database.",
   "00052": "No such user found.",
   "00053": "Please send a verification code.",
   "00054": "The code you enter does not match with the code we sent to your email. Please check again.",
@@ -65,6 +66,8 @@ export default {
   "00081": "Please provide a username that is longer than 3 letters and shorter than 15 letters.",
   "00084": "There is already a user with this username, please enter another.",
   "00086": "Your profile information was changed successfully.",
-  "00089": "The user information has gotten successfully.",
+  "00089": "The user has gotten information successfully.",
+  "00090":"Patient profile deleted successfully.",
+  "00091":"Patient details retrieved successfully",
   "00092": "Your account was deleted successfully."
 };

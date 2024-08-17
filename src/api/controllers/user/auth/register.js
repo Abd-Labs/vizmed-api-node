@@ -32,11 +32,12 @@ export default async (req, res) => {
     return res.status(500).json(errorHelper("00031", req, err.message));
   }
 
+  const session = await User.startSession();
+
+  session.startTransaction();
+
   try {
     const hashedPassword = await hash(req.body.password, 10);
-    const session = await User.startSession();
-
-    session.startTransaction();
 
     const user = new User({
       email: req.body.email,

@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 const patientSchema = new mongoose.Schema({
   doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  patientId: { type: String, required: true, unique: true },
+  patientId: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   age: { type: Number, required: true },

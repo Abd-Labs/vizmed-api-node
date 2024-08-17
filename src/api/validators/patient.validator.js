@@ -10,40 +10,24 @@ export const validateCreatePatient = (data) => {
     contactInfo: Joi.object({
       phone: Joi.string().required(),
     }).required(),
-    mriImages: Joi.array().items(Joi.string()).optional()
   });
   return schema.validate(data);
 };
 
-
-// Validator for retrieving a patient
-export const validateGetPatient = (params) => {
+// Validator for updating a patient
+export const validateUpdatePatient = (data) => {
   const schema = Joi.object({
-    id: Joi.string().required()
-  });
-  return schema.validate(params);
-};
-
-export const validateEditPatient = (data) => {
-  const schema = Joi.object({
-    patientId: Joi.string(),
-    firstName: Joi.string().min(3).max(30),
-    lastName: Joi.string().min(3).max(30),
-    age: Joi.number().integer().min(0),
-    gender: Joi.string().valid('male', 'female', 'other'),
+    patientId: Joi.string().optional(),
+    firstName: Joi.string().optional(),
+    lastName: Joi.string().optional(),
+    age: Joi.number().integer().min(0).optional(),
+    gender: Joi.string().valid('Male', 'Female', 'Other').optional(),
     contactInfo: Joi.object({
-      phone: Joi.string()
-    }),
-    mriImages: Joi.array().items(Joi.string()),
-  }).or('patientId', 'firstName', 'lastName', 'age', 'gender', 'contactInfo', 'mriImages');
+      phone: Joi.string().optional(),
+    }).optional(),
+  });
 
   return schema.validate(data);
 };
 
-// Validator for deleting a patient
-export const validateDeletePatient = (params) => {
-  const schema = Joi.object({
-    id: Joi.string().required()
-  });
-  return schema.validate(params);
-};
+
