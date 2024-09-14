@@ -49,10 +49,6 @@ export default async (req, res) => {
     });
 
     const savedUser = await user.save({ session });
-    // console.log("User saved successfully:", savedUser);
-
-    const accessToken = signAccessToken(savedUser._id);
-    const refreshToken = signRefreshToken(savedUser._id);
 
     logger("00035", savedUser._id, getText("en", "00035"), "Info", req);
 
@@ -62,8 +58,6 @@ export default async (req, res) => {
     return res.status(200).json({
       resultMessage: { en: getText("en", "00035") },
       resultCode: "00035",
-      accessToken,
-      refreshToken,
       user: {
         ...savedUser._doc,
         password: null,

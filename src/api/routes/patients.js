@@ -4,7 +4,8 @@ import {
   getPatients, 
   getPatientById, 
   updatePatient, 
-  deletePatient 
+  deletePatient,
+  getPreSignedUrl
 } from '../controllers/patient/index.js';
 import { auth } from '../middlewares/index.js';
 
@@ -16,5 +17,6 @@ router.get('/', auth,  getPatients);
 router.get('/:id', auth,  getPatientById);
 router.put('/:id',auth, updatePatient);
 router.delete('/:id',auth, deletePatient);
+router.post('/:id/upload-url',auth, getPreSignedUrl);
 
 export default router;
