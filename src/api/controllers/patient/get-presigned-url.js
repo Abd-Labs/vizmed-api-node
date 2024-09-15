@@ -27,7 +27,7 @@ const getPreSignedUrl = async (req, res) => {
   const doctorId = req.user._id; 
   const { fileName, fileType } = req.body;
   try {
-    // Step 1: Verify the patient exists and the user (doctor)  has access to that patient
+    // Verify the patient exists and the user (doctor)  has access to that patient
     const patient = await Patient.findOne({ _id: id, doctorId: doctorId });
     if (!patient) {
       return res
@@ -35,20 +35,20 @@ const getPreSignedUrl = async (req, res) => {
         .json(errorHelper("00051", req, "Patient not found or access denied"));
     }
 
-    // Step 2: Define the S3 key (file path)
+    //Define the S3 key (file path)
     const s3Key = `mri/doctors/${doctorId}/patients/${id}/${fileName}`; 
 
-    // Step 3: Create the PutObjectCommand for S3
+    // Create the PutObjectCommand for S3
     const command = new PutObjectCommand({
       Bucket: process.env.S3_BUCKET_NAME, // S3 bucket name
       Key: s3Key, // File path in the S3 bucket
       ContentType: fileType, // File type (e.g., application/dicom or application/nifti)
     });
 
-    // Step 4: Generate the pre-signed URL
+    //Generate the pre-signed URL
     const uploadURL = await getSignedUrl(s3, command, { expiresIn: 1800 });
 
-    // Step 5: Return the pre-signed URL to the client
+    //Return the pre-signed URL to the client
     return res.status(200).json({
       resultCode: "00089",
       uploadURL,  

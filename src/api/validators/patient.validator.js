@@ -37,10 +37,9 @@ export const validateGetPreSignedUrl = (data) => {
     fileName: Joi.string().required(), // File name must be a string and is required
     fileType: Joi.string()
       .valid(
-        'application/dicom', // DICOM file format
-        'application/nifti', // NIfTI file format
-        'image/jpeg',        // Optional: In case images might be JPEGs
-        'image/png'          // Optional: PNG support
+        'application/octet-stream', // NIfTI file format
+        'image/jpeg',// Optional: In case images might be JPEGs
+        'image/png'          
       )
       .required(), // File type must be one of the supported types and is required
   });
