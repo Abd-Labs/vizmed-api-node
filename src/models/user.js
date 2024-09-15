@@ -30,10 +30,6 @@ const userSchema = new Schema(
       enum: ['Student', 'Doctor'],
       required: true
     },
-    patients: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Patient'
-    }],
     isActivated: {
       type: Boolean,
       default: true,
