@@ -66,8 +66,12 @@ export default {
   "00081": "Please provide a username that is longer than 3 letters and shorter than 15 letters.",
   "00084": "There is already a user with this username, please enter another.",
   "00086": "Your profile information was changed successfully.",
+  "00087": "Patient Not Found",
   "00089": "The user has gotten information successfully.",
   "00090":"Patient profile deleted successfully.",
   "00091":"Patient details retrieved successfully",
-  "00092": "Your account was deleted successfully."
+  "00092": "Your account was deleted successfully.",
+  "00093": "MRI file processing has started",
+  "00094": "File Not Found on S3",
+  "00095": "Error Processing MRI file"
 };

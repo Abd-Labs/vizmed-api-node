@@ -10,7 +10,7 @@ const patientSchema = new mongoose.Schema({
   contactInfo: {
     phone: { type: String, required: true },
   },
-  mriFiles: [mriFileSchema],
+  mriFiles: [{type: mongoose.Schema.Types.ObjectId, ref: 'MRIFile'}],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
