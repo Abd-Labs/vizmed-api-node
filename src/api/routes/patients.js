@@ -7,7 +7,8 @@ import {
   deletePatient,
   getPreSignedUrl,
   fileUploadedController,
-  getMriSlicesUrl 
+  getMriSlicesUrl,
+  classifyMri
 } from '../controllers/patient/index.js';
 import { auth } from '../middlewares/index.js';
 
@@ -22,5 +23,6 @@ router.delete('/:id',auth, deletePatient);
 router.post('/:id/upload-url',auth, getPreSignedUrl);
 router.post('/:id/file-uploaded',auth, fileUploadedController);
 router.get('/:id/get-mri-slices',auth,getMriSlicesUrl);
+router.get('/:id/classify',auth,classifyMri);
 
 export default router;

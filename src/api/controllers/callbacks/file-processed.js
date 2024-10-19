@@ -31,10 +31,11 @@ try {
     }
 
     // Respond with the updated MRI file
-    return res.status(200);
+    console.log("Response returned")
+    return res.status(200).end();
 } catch (error) {
     console.error('Error updating MRI file:', error);
-    return res.status(500);
+    return res.status(500).end();
 }
 
 }
