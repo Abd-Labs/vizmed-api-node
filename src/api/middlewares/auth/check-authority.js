@@ -1,34 +1,39 @@
-import { User } from '../../../models/index.js';
 import { errorHelper } from '../../../utils/index.js';
 
-export async function checkAdmin(req, res, next) {
-  const user = await User.findById(req.user._id).select('type')
-    .catch(err => {
-      return res.status(500).json(errorHelper('00016', req, err.message));
-    });
+export const isStudent = (req, res, next) => {
+  try {
+    // Ensure user is attached to the request by checkAuth middleware
+    if (!req.user) {
+      return res.status(403).json(errorHelper("00017", req)); // Access denied. User not authenticated.
+    }
 
-  if (user.type !== 'admin') return res.status(403).json(errorHelper('00017', req));
+    // Check if the user's role is "Student"
+    if (req.user.role !== "Student") {
+      return res.status(403).json(errorHelper("00017", req)); // Access denied. Not authorized as Student.
+    }
 
-  next();
-}
-export async function checkCreator(req, res, next) {
-  const user = await User.findById(req.user._id).select('type')
-    .catch(err => {
-      return res.status(500).json(errorHelper('00018', req, err.message));
-    });
+    // Proceed to the next middleware or route handler
+    next();
+  } catch (err) {
+    return res.status(500).json(errorHelper("00008", req, err.message)); // Internal Server Error
+  }
+};
 
-  if (user.type !== 'creator' && user.type !== 'admin')
-    return res.status(403).json(errorHelper('00019', req));
+export const isDoctor = (req, res, next) => {
+  try {
+    // Ensure user is attached to the request by checkAuth middleware
+    if (!req.user) {
+      return res.status(403).json(errorHelper("00017", req)); // Access denied. User not authenticated.
+    }
 
-  next();
-}
-export async function checkReader(req, res, next) {
-  const user = await User.findById(req.user._id).select('type')
-    .catch(err => {
-      return res.status(500).json(errorHelper('00020', req, err.message));
-    });
+    // Check if the user's role is "Doctor"
+    if (req.user.role !== "Doctor") {
+      return res.status(403).json(errorHelper("00017", req)); // Access denied. Not authorized as Doctor.
+    }
 
-  if (user.type === 'user') return res.status(403).json(errorHelper('00021', req));
-
-  next();
-}
+    // Proceed to the next middleware or route handler
+    next();
+  } catch (err) {
+    return res.status(500).json(errorHelper("00008", req, err.message)); // Internal Server Error
+  }
+};

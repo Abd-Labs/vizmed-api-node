@@ -5,10 +5,7 @@ import {
   getPatientById, 
   updatePatient, 
   deletePatient,
-  getPreSignedUrl,
-  fileUploadedController,
-  getMriSlicesUrl,
-  classifyMri
+
 } from '../controllers/patient/index.js';
 import { auth } from '../middlewares/index.js';
 
@@ -20,9 +17,5 @@ router.get('/', auth,  getPatients);
 router.get('/:id', auth,  getPatientById);
 router.put('/:id',auth, updatePatient);
 router.delete('/:id',auth, deletePatient);
-router.post('/:id/upload-url',auth, getPreSignedUrl);
-router.post('/:id/file-uploaded',auth, fileUploadedController);
-router.get('/:id/get-mri-slices',auth,getMriSlicesUrl);
-router.get('/:id/classify',auth,classifyMri);
 
 export default router;

@@ -73,5 +73,10 @@ export default {
   "00092": "Your account was deleted successfully.",
   "00093": "MRI file processing has started",
   "00094": "File Not Found on S3",
-  "00095": "Error Processing MRI file"
+  "00095": "Error Processing MRI file",
+  "00096": "Please Provide a title",
+  "00097": "Please provide a valid learningCaseId when the Assessment type is LEARNING_CASE.",
+  "00098": 'Invalid Diagnosis Profile Id',
+  "00099": 'Invalid Patient Id',
+  "00100": 'Invalid Assessment Id'
 };
