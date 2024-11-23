@@ -28,11 +28,11 @@ const classifyMRI = async (req,res) => {
   
       // Check if the MRI file is processed
       if (mriFile.status === 'UPLOADED') {
-         return res.status(422).json({ message: 'Operation not Permitted. File is not processed' });
+         return res.status(422).json({ message: 'Operation not Permitted. File is not processed', mriFileStatus: mriFile.status });
       }
 
       else if (mriFile.status === 'UNDER_PROCESSING') {
-        return res.status(422).json({ message: 'File is still under processing' });
+        return res.status(422).json({ message: 'File is still under processing', mriFileStatus: mriFile.status });
       } 
 
       // Call the FastAPI classification endpoint

@@ -10,13 +10,14 @@ import { validateGetPreSignedUrl } from "../../validators/mri.validator.js";
 const getPreSignedUrl = async (req, res) => {
   try {
     // Validate request body for fileName
-    const { error } = validateGetPreSignedUrl(req.body);
+    // const { error } = validateGetPreSignedUrl(req.body);
 
-    if (error) {
-      return res
-        .status(400)
-        .json(errorHelper("00016", req, error.details[0].message));
-    }
+    // if (error) {
+    //   console.log("validation error" , error)
+    //   return res
+    //     .status(400)
+    //     .json(errorHelper("00016", req, error.details[0].message));
+    // }
 
     const { fileName } = req.body; // Get file name from request body
     const { id } = req.params; // Get assessmentId or patientId from request params
@@ -31,6 +32,7 @@ const getPreSignedUrl = async (req, res) => {
       // For Doctor: Validate patient exists
       const patient = await Patient.findById(id);
       if (!patient) {
+        console.log("Patient not found")
         return res
           .status(400)
           .json(errorHelper("00099", req));
@@ -40,6 +42,7 @@ const getPreSignedUrl = async (req, res) => {
       // For Student: Validate assessment exists
       const assessment = await Assessment.findById(id);
       if (!assessment) {
+        console.log("Assessment");
         return res
           .status(400)
           .json(errorHelper("00100", req));
@@ -55,7 +58,7 @@ const getPreSignedUrl = async (req, res) => {
     const presignedUrl = await generatePresignedUrl(s3Key);
 
     // Return the presigned URL to the client
-    return res.status(200).json({ presignedUrl });
+    return res.status(200).json({ presignedUrl, s3Key });
   } catch (error) {
     console.error("Error generating presigned URL:", error);
     return res.status(500).json(errorHelper("00008", req, error.message));
