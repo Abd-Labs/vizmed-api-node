@@ -5,7 +5,7 @@ import {
   getPatientById, 
   updatePatient, 
   deletePatient,
-
+  getDiagnosisProfile
 } from '../controllers/patient/index.js';
 import { auth } from '../middlewares/index.js';
 
@@ -17,5 +17,6 @@ router.get('/', auth,  getPatients);
 router.get('/:id', auth,  getPatientById);
 router.put('/:id',auth, updatePatient);
 router.delete('/:id',auth, deletePatient);
+router.get('/:id/get-diagnosis-profile',auth,getDiagnosisProfile);
 
 export default router;
