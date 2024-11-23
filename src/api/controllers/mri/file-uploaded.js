@@ -1,6 +1,6 @@
 import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
-import { Patient, MRI } from "../../../models/index.js";
-import { errorHelper, logger } from "../../../utils/index.js";
+import { Patient, MRI, Assessment } from "../../../models/index.js";
+import { errorHelper, logger, validateS3Object, callFastApiEndpoint } from "../../../utils/index.js";
 
 // Initialize S3 client (v3)
 const s3 = new S3Client({
@@ -13,77 +13,76 @@ const s3 = new S3Client({
 
 // File-uploaded controller
 const fileUploadedController = async (req, res) => {
-  const patientId = req.params.id; // Patient ID from query params
+  const id = req.params.id; // Patient ID or Assessment ID from query params
   const { s3Key } = req.body; // S3 key of the uploaded file
-  const doctorId = req.user._id; // Doctor ID from the request context
-  const callbackUrl = `${req.protocol}://${req.get('host')}/api/callback/file-processed`;
-
+  const { _id: userId, role: userRole } = req.user; // User ID and role
+  const callbackUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/callback/file-processed`;
 
   try {
     // Step 1: Verify the file exists in S3
-    const command = new HeadObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: s3Key,
-    });
+    const fileExists = await validateS3Object(s3Key);
 
-    try {
-      await s3.send(command); // Check if file exists
-    } catch (error) {
-      if (error.name === "NotFound") {
-        return res
-          .status(404)
-          .json(errorHelper("00094", req, "File not found on S3"));
-      }
-    }
-
-    const patient = await Patient.findOne({
-      _id: patientId,
-      doctorId: doctorId,
-    });
-    if (!patient) {
+    if (!fileExists) {
       return res
         .status(404)
-        .json(errorHelper("00087", req, "Patient not found"));
+        .json(errorHelper("00094", req, "File not found on S3"));
     }
 
-    // Step 2: Create a new MRI object with status 'UPLOADED'
+    let parentObject;
+
+    if (userRole === "Doctor") {
+      // Step 2 (Doctor): Validate patient existence
+      parentObject = await Patient.findOne({ _id: id, doctorId: userId });
+      if (!parentObject) {
+        return res.status(404).json(errorHelper("00099", req));
+      }
+    } else if (userRole === "Student") {
+      // Step 2 (Student): Validate assessment existence
+      parentObject = await Assessment.findOne({ _id: id, studentId: userId });
+      if (!parentObject) {
+        return res.status(404).json(errorHelper("00100", req));
+      }
+    } else {
+      return res.status(403).json(errorHelper("00019", req));
+    }
+
+    // Step 3: Create a new MRI object with status 'UPLOADED'
     const mriFile = new MRI({
       s3_key: s3Key,
       bucket_name: process.env.S3_BUCKET_NAME,
       status: "UPLOADED",
-      zip_file_key: null, // Initially null
-      metadata: null, // Initially null
+      zip_file_key: null,
+      metadata: null,
     });
-    
+
     await mriFile.save(); // Save MRI file to the database
 
-    // Step 3: Save the MRI file in the patient's record
-    patient.mriFiles.push(mriFile._id); // Add the MRI file ID to the mriFiles array
-    const updatedPatient = await patient.save(); // Save the updated patient document
+    // Step 4: Add MRI object reference to the parent object
+    if (userRole === "Doctor") {
+      parentObject.mriFiles.push(mriFile._id);
+    } else if (userRole === "Student") {
+      parentObject.mriFile = mriFile._id;
+    }
+    await parentObject.save();
 
-    // Step 4: Call the FastAPI endpoint to start file processing
-    const fastApiResponse = await fetch(
+    // Step 5: Call FastAPI endpoint to start processing
+    const fileProcessingRequest = {
+      s3_key: s3Key,
+      bucket_name: process.env.S3_BUCKET_NAME,
+      callback_url: callbackUrl,
+      user_id: userId,
+      resource_id: parentObject._id,
+      mriFileId: mriFile._id,
+    };
+
+    const fastApiResponse = await callFastApiEndpoint(
       `${process.env.FAST_API_URL}/api/v1/file-processing`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          s3_key: s3Key,
-          bucket_name: process.env.S3_BUCKET_NAME,
-          callback_url: callbackUrl,
-          user_id: updatedPatient.doctorId,
-          patient_id: patientId,
-          mriFileId: mriFile._id
-        }),
-      }
+      fileProcessingRequest
     );
 
     if (!fastApiResponse.ok) {
-      logger.error(
-        `Error starting file processing: ${fastApiResponse.statusText}`
-      );
       return res
         .status(500)
         .json(errorHelper("00003", req, "Error starting file processing"));
@@ -97,13 +96,12 @@ const fileUploadedController = async (req, res) => {
     return res.status(200).json({
       resultCode: "00093",
       message: "File uploaded and processing started.",
-      patient: updatedPatient,
+      data: parentObject
     });
-  } 
-  catch (error) {
+  } catch (error) {
     console.log(error);
     logger.error("Error in file-uploaded controller:", error);
-    return res.status(500).json(errorHelper("00005", req, error.message));
+    return res.status(500).json(errorHelper("00095", req, error.message));
   }
 };
 

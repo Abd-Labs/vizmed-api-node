@@ -15,7 +15,7 @@ const assessmentSchema = new mongoose.Schema({
     enum: ["N", "P"],
     required: true,
   },
-  uploadedMriFile: {
+  mriFile: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "MRIFile",
   },

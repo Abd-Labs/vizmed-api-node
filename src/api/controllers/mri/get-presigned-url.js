@@ -31,18 +31,14 @@ const getPreSignedUrl = async (req, res) => {
       // For Doctor: Validate patient exists
       const patient = await Patient.findById(id);
       if (!patient) {
-        return res
-          .status(400)
-          .json(errorHelper("00099", req));
+        return res.status(400).json(errorHelper("00099", req));
       }
       s3Key = generateDoctorS3Key(userId, id, fileName); // id is patientId
     } else if (userRole === "Student") {
       // For Student: Validate assessment exists
       const assessment = await Assessment.findById(id);
       if (!assessment) {
-        return res
-          .status(400)
-          .json(errorHelper("00100", req));
+        return res.status(400).json(errorHelper("00100", req));
       }
       s3Key = generateStudentS3Key(userId, id, fileName); // id is assessmentId
     } else {
@@ -52,10 +48,14 @@ const getPreSignedUrl = async (req, res) => {
     }
 
     // Generate the presigned URL
-    const presignedUrl = await generatePresignedUrl(s3Key);
+    const uploadURL = await generatePresignedUrl(s3Key);
 
     // Return the presigned URL to the client
-    return res.status(200).json({ presignedUrl });
+    return res.status(200).json({
+      resultCode: "00089",
+      uploadURL,
+      s3Key,
+    });
   } catch (error) {
     console.error("Error generating presigned URL:", error);
     return res.status(500).json(errorHelper("00008", req, error.message));

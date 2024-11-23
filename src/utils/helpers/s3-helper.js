@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // Initialize the S3 client using environment variables
@@ -23,6 +23,24 @@ export const generatePresignedUrl = async (s3Key) => {
     throw new Error("Error generating presigned URL: " + error.message);
   }
 };
+
+export const validateS3Object = async (s3Key) => {
+  const command = new HeadObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: s3Key,
+  });
+
+  try {
+    await s3Client.send(command);
+    return true; // Object exists
+  } catch (error) {
+    if (error.name === "NotFound") {
+      return false; // Object does not exist
+    }
+    throw error; // Other errors
+  }
+};
+
 
 export const generateDoctorS3Key = (doctorId, patientId, fileName) => {
   return `mri/doctors/${doctorId}/patients/${patientId}/${fileName}`;
