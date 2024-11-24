@@ -30,3 +30,18 @@ export const validateUpdatePatient = (data) => {
   return schema.validate(data);
 };
 
+
+// Validator for 'type' query parameter
+export const validateGetDiagnosisProfile = (data) => {
+  const schema = Joi.object({
+    type: Joi.string()
+      .valid("P", "D") // Only "P" or "D" are allowed
+      .required()       // It must be present
+      .messages({
+        "any.required": "Query parameter 'type' is required.",
+        "string.valid": "Query parameter 'type' must be either 'P' or 'D'.",
+      }),
+  });
+
+  return schema.validate(data);
+};

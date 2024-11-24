@@ -1,14 +1,27 @@
 import { DiagnosisProfile } from "../../../models/index.js";
 import { errorHelper } from "../../../utils/index.js";
-
+import { validateGetDiagnosisProfile } from "../../validators/patient.validator.js";
 
 const getDiagnosisProfile = async (req, res) => {
   try {
     const { id } = req.params;
     const doctorId = req.user._id;
+    const type = req.query.type; // Type of diagnosis profile to retrieve
 
-    // Find the patient by _id and doctorId to ensure the patient belongs to the doctor
-    const diagnosisProfile = await DiagnosisProfile.findOne({ patient_id: id, doctor_id: doctorId });
+    const { error } = validateGetDiagnosisProfile(req.query); // Validate the query parameter
+
+    if (error) {
+      return res.status(400).json(errorHelper("00103", req));
+    }
+
+    let diagnosisProfile;
+
+    if (type === "P") {
+      diagnosisProfile = await DiagnosisProfile.findOne({ patient_id: id, doctor_id: doctorId });
+    }
+    else if (type === "D") {
+      diagnosisProfile = await DiagnosisProfile.findOne({ _id: id });
+    } 
 
     if (!diagnosisProfile) {
       return res.status(404).json(errorHelper("00051", req));
