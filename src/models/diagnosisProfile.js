@@ -34,7 +34,7 @@ const diagnosisProfileSchema = new mongoose.Schema({
   },
   diagnosis_status: {
     type: String,
-    enum: ['INPROGRESS', 'COMPLETE'],
+    enum: ['INPROGRESS', 'COMPLETED'],
     default: 'INPROGRESS'
   }
 }, { timestamps: true });
