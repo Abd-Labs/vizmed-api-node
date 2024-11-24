@@ -7,14 +7,16 @@ const fetchPatientStatistics = async (req, res) => {
   try {
     const doctorId = req.user._id; // Assuming the authenticated user's ID is available
 
+    const totalProfiles = await DiagnosisProfile.countDocuments({ doctor_id: doctorId });
+
     // Fetch all completed diagnosis profiles for the given doctor
     const completedProfiles = await DiagnosisProfile.find({
       doctor_id: doctorId,
-      diagnosis_status: "COMPLETE",
+      diagnosis_status: "COMPLETED",
     });
 
     if (!completedProfiles || completedProfiles.length === 0) {
-      return res.status(404).json({
+      return res.status(204).json({
         message: "No completed diagnosis profiles found for the given doctor.",
       });
     }
@@ -28,7 +30,8 @@ const fetchPatientStatistics = async (req, res) => {
 
     return res.status(200).json({
       message: "Statistics fetched successfully.",
-      total_profiles: completedProfiles.length,
+      total_profiles: totalProfiles,
+      completed_profiles: completedProfiles.length,
       statistics,
     });
   } catch (error) {
