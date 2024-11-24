@@ -1,6 +1,11 @@
 import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
 import { Patient, MRI, Assessment } from "../../../models/index.js";
-import { errorHelper, logger, validateS3Object, callFastApiEndpoint } from "../../../utils/index.js";
+import {
+  errorHelper,
+  logger,
+  validateS3Object,
+  callFastApiEndpoint
+} from "../../../utils/index.js";
 
 // Initialize S3 client (v3)
 const s3 = new S3Client({
@@ -27,7 +32,7 @@ const fileUploadedController = async (req, res) => {
     if (!fileExists) {
       return res
         .status(404)
-        .json(errorHelper("00094", req, "File not found on S3"));
+        .json(errorHelper("00094", req));
     }
 
     let parentObject;
@@ -96,7 +101,7 @@ const fileUploadedController = async (req, res) => {
     return res.status(200).json({
       resultCode: "00093",
       message: "File uploaded and processing started.",
-      data: parentObject
+      data: parentObject,
     });
   } catch (error) {
     console.log(error);

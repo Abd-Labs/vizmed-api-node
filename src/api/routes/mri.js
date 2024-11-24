@@ -4,7 +4,8 @@ import {
   fileUploadedController,
   getMriSlicesUrl,
   classifyMri,
-  getMriFiles
+  getMriFiles,
+  updateResource
 } from "../controllers/mri/index.js";
 import { auth } from "../middlewares/index.js";
 
@@ -15,5 +16,6 @@ router.post("/:id/file-uploaded", auth, fileUploadedController);
 router.get("/:id/get-mri-slices", auth, getMriSlicesUrl);
 router.get("/:id/classify", auth, classifyMri);
 router.get('/:id/get-mri-files',auth,getMriFiles);
+router.put('/:id/update-resource', auth, updateResource)
 
 export default router;

@@ -7,5 +7,5 @@ export { default as ipHelper } from './helpers/ip-helper.js';
 export { default as errorHelper } from './helpers/error-helper.js';
 export { default as generateRandomCode } from './helpers/generate-random-code.js';
 export { default as withTransaction } from './helpers/transaction-helper.js'
-export { generatePresignedUrl, generateDoctorS3Key, generateStudentS3Key, validateS3Object} from './helpers/s3-helper.js'
+export { generatePutUrl, generateDoctorS3Key, generateStudentS3Key, validateS3Object, generateGetUrl} from './helpers/s3-helper.js'
 export { callFastApiEndpoint } from  './helpers/fastapi-helper.js'

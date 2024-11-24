@@ -1,63 +1,52 @@
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Patient, MRI } from "../../../models/index.js";
-import { errorHelper, logger, getText } from "../../../utils/index.js";
-
-// Initialize S3 client (v3)
-const s3 = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
+import { Patient, MRI, Assessment } from "../../../models/index.js";
+import {
+  errorHelper,
+  generateGetUrl,
+} from "../../../utils/index.js";
 
 const getMriSlicesUrl = async (req, res) => {
-  const { id } = req.params;
-  const doctorId = req.user._id;
+  const id  = req.params.id;
+  const { _id: userId, role: userRole } = req.user; // User ID and role
 
   try {
-    // Fetch patient and check if doctor has access
-    const patient = await Patient.findOne({ _id: id, doctorId: doctorId });
-    if (!patient) {
-      return res
-        .status(404)
-        .json(errorHelper("00051", req, "Patient not found or access denied"));
+
+    let resourceObject;
+
+    if (userRole === "Doctor") {
+      resourceObject = await Patient.findOne({ _id: id, doctorId: userId });
+    }
+    else if (userRole === "Student") {
+      resourceObject = await Assessment.findOne({ _id: id, studentId: userId })
     }
 
-    console.log("Patient Found: ", patient)
+    if (!resourceObject) {
+      return res.status(404).json(errorHelper("00051", req));
+    }
 
     // Retrieve the first MRI file
-    const mriFile = patient.mriFiles && patient.mriFiles.length > 0 
-      ? patient.mriFiles[0]
-      : null;
-    console.log(mriFile)
+    const mriFile =  userRole === "Doctor" ?  resourceObject.mriFiles[0] : resourceObject.mriFile;
 
     if (!mriFile) {
       return res
         .status(404)
-        .json(errorHelper("00051", req, "No MRI file found"));
+        .json(errorHelper("00102", req));
     }
 
-    console.log("MRI file Found")
-
     const mri = await MRI.findOne({ _id: mriFile });
-    console.log(mri)
+
     if (!mri) {
       return res
         .status(404)
-        .json(errorHelper("00051", req, "No MRI data found"));
+        .json(errorHelper("00051", req));
     }
-
 
     // Check MRI file status
     if (mri.status === "UNDER_PROCESSING") {
-      return res
-        .status(202)
-        .json({
-          resultCode: "00093",  // Message code for "MRI file processing has started"
-          message: "The MRI file is currently being processed. Please try again later.",
-        });
+      return res.status(202).json({
+        resultCode: "00093", // Message code for "MRI file processing has started"
+        message:
+          "The MRI file is currently being processed. Please try again later.",
+      });
     }
 
     if (mri.status !== "PROCESSED") {
@@ -66,19 +55,11 @@ const getMriSlicesUrl = async (req, res) => {
         .json(errorHelper("00051", req, "No processed MRI file found"));
     }
 
-    console.log("File Processed")
-
-    // Create command to generate pre-signed URL for zip file
-    const command = new GetObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: mri.zip_file_key,
-    });
-
     // Generate pre-signed URL
-    const downloadURL = await getSignedUrl(s3, command, { expiresIn: 1800 });
+    const downloadURL = await generateGetUrl(mri.zip_file_key);
 
     return res.status(200).json({
-      resultCode: "00089",  // Message code for "MRI slices retrieved successfully"
+      resultCode: "00089", // Message code for "MRI slices retrieved successfully"
       downloadURL,
     });
   } catch (error) {

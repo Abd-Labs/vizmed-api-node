@@ -3,22 +3,12 @@ import {
   errorHelper,
   generateStudentS3Key,
   generateDoctorS3Key,
-  generatePresignedUrl,
+  generatePutUrl,
 } from "../../../utils/index.js";
 import { validateGetPreSignedUrl } from "../../validators/mri.validator.js";
 
 const getPreSignedUrl = async (req, res) => {
   try {
-    // Validate request body for fileName
-    // const { error } = validateGetPreSignedUrl(req.body);
-
-    // if (error) {
-    //   console.log("validation error" , error)
-    //   return res
-    //     .status(400)
-    //     .json(errorHelper("00016", req, error.details[0].message));
-    // }
-
     const { fileName } = req.body; // Get file name from request body
     const { id } = req.params; // Get assessmentId or patientId from request params
 
@@ -49,7 +39,7 @@ const getPreSignedUrl = async (req, res) => {
     }
 
     // Generate the presigned URL
-    const uploadURL = await generatePresignedUrl(s3Key);
+    const presignedUrl = await generatePutUrl(s3Key);
 
     // Return the presigned URL to the client
     return res.status(200).json({ resultCode: "00089", presignedUrl, s3Key });

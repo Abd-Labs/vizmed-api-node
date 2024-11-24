@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // Initialize the S3 client using environment variables
@@ -10,7 +10,7 @@ const s3Client = new S3Client({
   },
 });
 
-export const generatePresignedUrl = async (s3Key) => {
+export const generatePutUrl = async (s3Key) => {
   const command = new PutObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME, // Use bucket name from environment
     Key: s3Key
@@ -23,6 +23,21 @@ export const generatePresignedUrl = async (s3Key) => {
     throw new Error("Error generating presigned URL: " + error.message);
   }
 };
+
+export const generateGetUrl = async (s3Key) => {
+  const command = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: s3Key,
+  });
+
+  try {
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 900 });
+    return url;
+  } catch (error) {
+    throw new Error("Error generating presigned URL: " + error.message);
+  }
+  
+}
 
 export const validateS3Object = async (s3Key) => {
   const command = new HeadObjectCommand({

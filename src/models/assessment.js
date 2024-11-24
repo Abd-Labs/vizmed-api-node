@@ -27,7 +27,7 @@ const assessmentSchema = new mongoose.Schema({
     },
   },
   studentPrediction: {
-    classificationResult: {
+    disease_class: {
       type: String,
       enum: ["AD", "CN", "EMCI", "LMCI", "MCI"],
     },
@@ -35,6 +35,12 @@ const assessmentSchema = new mongoose.Schema({
       type: [String],
       default: [],
     },
+  },
+  model_classification_result: {
+    axial_classification: { type: String, enum: ['AD', 'CN', 'EMCI', 'LMCI', 'MCI'] },
+    coronal_classification: { type: String, enum: ['AD', 'CN', 'EMCI', 'LMCI', 'MCI'] },
+    sagittal_classification: { type: String, enum: ['AD', 'CN', 'EMCI', 'LMCI', 'MCI'] },
+    ensemble_prediction: { type: String, enum: ['AD', 'CN', 'EMCI', 'LMCI', 'MCI'] },
   },
   report: {
     accuracyComparison: {

@@ -78,5 +78,7 @@ export default {
   "00097": "Please provide a valid learningCaseId when the Assessment type is LEARNING_CASE.",
   "00098": 'Invalid Diagnosis Profile Id',
   "00099": 'Invalid Patient Id',
-  "00100": 'Invalid Assessment Id'
+  "00100": 'Invalid Assessment Id',
+  "00101": 'Endpoint not allowed for Assessments with type "P"',
+  "00102": 'No MRI file present against the resource'
 };
