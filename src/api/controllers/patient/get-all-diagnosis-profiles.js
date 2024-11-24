@@ -3,12 +3,21 @@ import { DiagnosisProfile } from "../../../models/index.js";
 const getAllDiagnosisProfiles = async (req, res) => {
   try {
     const doctorId = req.user._id; // Assuming the logged-in doctor information is available in req.user
-  
-    // Find all completed diagnosis profiles for the doctor
-    const completedProfiles = await DiagnosisProfile.find({
-      doctor_id: doctorId,
-      diagnosis_status: "COMPLETED",
-    })// Convert the Mongoose document into plain JS objects for easier manipulation
+    const complete = req.query.complete; // Type of diagnosis profile to retrieve
+
+
+    let completedProfiles;
+
+    if (complete === "true") {
+      completedProfiles = await DiagnosisProfile.find({
+        diagnosis_status: "COMPLETED",
+      })
+    }
+    else {
+      completedProfiles = await DiagnosisProfile.find({
+        doctor_id: doctorId,
+      })
+    }
 
     // Response
     return res.status(200).json({
